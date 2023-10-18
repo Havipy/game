@@ -2,6 +2,7 @@
 function attempTo(description, callback) {
 	for (let attempts = 1000; attempts > 0; attempts--) {
 		if (callback()) {
+
 			return;
 		}
 	}

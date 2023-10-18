@@ -53,14 +53,15 @@
 	<script>
 
 		const tileSize = 25;
-		const columnTilesCount = 25;
-		const uiWidth = 16;
+		const rowsTilesCount = 25;
+		const columnTilesCount = 41;
 
 
 		const canvas = document.querySelector('.field');
 		const ctx = canvas.getContext('2d');
 
 		let gameState = 'title';
+
 
 
 		document.querySelector('html').onkeypress = function (e) {
@@ -72,7 +73,7 @@
 			else if (gameState == 'running') {
 
 				if (e.key == "w") {
-					console.log(1)
+
 					player.tryMove(0, -1);
 				}
 				if (e.key == "s") {
@@ -89,6 +90,7 @@
 				}
 
 			}
+			draw();
 
 		}
 		setInterval(draw, 20);

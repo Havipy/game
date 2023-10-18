@@ -1,8 +1,8 @@
 
 //Настройка размеров канваса
 function setupCanvas() {
-	canvas.width = tileSize * (columnTilesCount + uiWidth);
-	canvas.height = tileSize * columnTilesCount;
+	canvas.width = tileSize * columnTilesCount;
+	canvas.height = tileSize * rowsTilesCount;
 	canvas.style.width = canvas.width + 'px';
 	canvas.style.height = canvas.height + 'px';
 }
@@ -26,10 +26,10 @@ function tick() {
 			//Удаление мертвого противника
 			enemies.splice(i, 1);
 		}
-		draw();
 	}
-	if (player.dead) {
-
+	//Завершение игры
+	if (player.dead || enemies.length == 0) {
+		draw();
 		showTitle();
 	}
 }
@@ -40,8 +40,9 @@ function draw() {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 		//Отрисовка полей
-		for (let i = 0; i < columnTilesCount + uiWidth; i++) {
-			for (let j = 0; j < columnTilesCount; j++) {
+		for (let i = 0; i < columnTilesCount; i++) {
+			for (let j = 0; j < rowsTilesCount; j++) {
+
 				tiles[i][j].draw();
 			}
 		}
@@ -61,11 +62,13 @@ function showTitle() {
 	ctx.fillStyle = 'rgba(0,0,0,.75)';
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 	gameState = "title";
+	draw();
 }
 
 //Запуск игры
 function startGame() {
 	generateMap();
-	player = new Player(getRandomPassableTile());
+	player = new Player(getRandomThroughoutTile());
 	gameState = "running";
+
 }

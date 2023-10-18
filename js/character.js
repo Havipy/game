@@ -6,15 +6,6 @@ class Character {
 		this.hp = hp;
 	}
 
-	//Обновления состояния противника 
-	update() {
-		if (this.enemyStunned) {
-			this.enemyStunned = false;
-			return;
-		}
-		this.doAction();
-	}
-
 	//Передвинуть персонажа
 	move(tile) {
 		if (this.tile) {
@@ -22,6 +13,8 @@ class Character {
 		}
 		this.tile = tile;
 		tile.character = this;
+		tile.stepOnSword(this);
+		tile.stepOnPotion(this);
 	}
 
 	//Проверка на возможность передвижения
@@ -43,13 +36,13 @@ class Character {
 	//Функция для поиска игрока противником
 	doAction() {
 
-		let neighbors = this.tile.getNextPassableNeighbors();
+		let neighbors = this.tile.getNearThroughoutNeighbors();
 		neighbors = neighbors.filter(t => !t.character || t.character.isPlayer);
 
 		if (neighbors.length) {
 
 			//Поиск наиболее подходящей по расстоянию клетки
-			neighbors.sort((a, b) => a.dist(player.tile) - b.dist(player.tile));
+			neighbors.sort((a, b) => a.getDistanceBetweenTiles(player.tile) - b.getDistanceBetweenTiles(player.tile));
 
 			let newTile = neighbors[0];
 			this.tryMove(newTile.x - this.tile.x, newTile.y - this.tile.y);
@@ -90,6 +83,14 @@ class Enemy extends Character {
 		const sprite = new Image();
 		sprite.src = 'images/tile-E.png';
 		super(tile, sprite, 6);
+	}
+	//Обновления состояния противника 
+	update() {
+		if (this.enemyStunned) {
+			this.enemyStunned = false;
+			return;
+		}
+		this.doAction();
 	}
 }
 
