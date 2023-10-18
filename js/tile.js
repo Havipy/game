@@ -57,7 +57,7 @@ class Floor extends Tile {
 class Wall extends Tile {
 	constructor(x, y) {
 		const sprite = new Image();
-		sprite.src = 'images/tile-w.png';
+		sprite.src = 'images/tile-W.png';
 		super(x, y, sprite, false);
 	}
 }
