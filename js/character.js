@@ -19,9 +19,10 @@ class Character {
 
 	//Проверка на возможность передвижения
 	tryMove(dx, dy) {
-		let newTile = this.tile.getNeighbor(dx, dy);
-		if (newTile.passable) {
 
+		let newTile = this.tile.getNeighbor(dx, dy);
+
+		if (newTile.passable) {
 			if (!newTile.character) {
 				this.move(newTile);
 			}
@@ -50,8 +51,8 @@ class Character {
 				this.move(newTile);
 				return true;
 			}
-
 		}
+
 	}
 
 	//Функция для поиска игрока противником
@@ -73,6 +74,10 @@ class Character {
 	//Функция для получения урона
 	hit(damage) {
 		this.hp -= damage;
+		if (this.isPlayer && this.tile.potion) {
+
+			this.tile.stepOnPotion(this);
+		}
 		if (this.hp <= 0) {
 			this.die();
 		}
@@ -93,7 +98,7 @@ class Character {
 
 	//Отрисовка персонажа
 	draw() {
-		drawSprite(this.sprite, this.tile.x, this.tile.y);
+		game.drawSprite(this.sprite, this.tile.x, this.tile.y);
 		this.drawHp();
 	}
 
@@ -114,6 +119,7 @@ class Enemy extends Character {
 		this.doAction();
 	}
 }
+
 
 class Player extends Character {
 
@@ -136,18 +142,18 @@ class Player extends Character {
 			nearEnemies.forEach(nearEnemy => {
 				nearEnemy.character.hit(this.damage);
 				//Оглушение противника
-				if (Math.random() < 0.9) {
+				if (Math.random() < 0.8) {
 					if (nearEnemy.character) {
 						nearEnemy.character.enemyStunned = true;
 					}
 				}
 			});
-			tick();
+			game.tick();
 		}
 	}
 	tryMove(dx, dy) {
 		if (super.tryMove(dx, dy)) {
-			tick();
+			game.tick();
 		}
 	}
 }

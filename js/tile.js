@@ -1,4 +1,5 @@
 class Tile {
+
 	constructor(x, y, sprite, passable) {
 		this.x = x;
 		this.y = y;
@@ -37,17 +38,17 @@ class Tile {
 		return connectedTiles;
 	}
 	draw() {
-		drawSprite(this.sprite, this.x, this.y);
+		game.drawSprite(this.sprite, this.x, this.y);
 		if (this.potion) {
 
 			const potionSprite = new Image();
 			potionSprite.src = 'images/tile-HP.png';
-			drawSprite(potionSprite, this.x, this.y);
+			game.drawSprite(potionSprite, this.x, this.y);
 		}
 		if (this.sword) {
 			const swordSprite = new Image();
 			swordSprite.src = 'images/tile-SW.png';
-			drawSprite(swordSprite, this.x, this.y);
+			game.drawSprite(swordSprite, this.x, this.y);
 		}
 	}
 }
@@ -67,6 +68,7 @@ class Floor extends Tile {
 	}
 
 	stepOnPotion(character) {
+
 		if (character.isPlayer && this.potion) {
 			if (character.hp < 6) {
 				character.hp = 6;

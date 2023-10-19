@@ -51,33 +51,25 @@
 	<script src="js/util.js"></script>
 
 	<script>
-
 		const tileSize = 25;
 		const rowsTilesCount = 25;
 		const columnsTilesCount = 41;
-
-
 		const canvas = document.querySelector('.field');
 		const ctx = canvas.getContext('2d');
 
 		let gameState = 'title';
 
-
-
 		document.querySelector('html').onkeypress = function (e) {
-
 			e.preventDefault();
 			if (gameState == 'title') {
-				startGame();
+
+				game.startGame();
 			}
 			else if (gameState == 'running') {
-
 				if (e.key == "w") {
-					console.log('move');
 					player.tryMove(0, -1);
 				}
 				if (e.key == "s") {
-					console.log('move');
 					player.tryMove(0, 1);
 				}
 				if (e.key == "a") {
@@ -85,19 +77,17 @@
 				}
 				if (e.key == "d") {
 					player.tryMove(1, 0);
-				};
+				}
 				if (e.code == 'Space') {
 					player.attack();
 				}
-
 			}
-			draw();
-
+			game.draw();
 		}
-		setInterval(draw, 20);
 
-		setupCanvas();
-
+		setInterval(game.draw, 20);
+		game.setupCanvas();
+		game.showTitle('Рогалик');
 
 	</script>
 </body>
