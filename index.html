@@ -54,7 +54,7 @@
 
 		const tileSize = 25;
 		const rowsTilesCount = 25;
-		const columnTilesCount = 41;
+		const columnsTilesCount = 41;
 
 
 		const canvas = document.querySelector('.field');
@@ -73,10 +73,11 @@
 			else if (gameState == 'running') {
 
 				if (e.key == "w") {
-
+					console.log('move');
 					player.tryMove(0, -1);
 				}
 				if (e.key == "s") {
+					console.log('move');
 					player.tryMove(0, 1);
 				}
 				if (e.key == "a") {

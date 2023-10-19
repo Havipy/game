@@ -21,6 +21,7 @@ class Character {
 	tryMove(dx, dy) {
 		let newTile = this.tile.getNeighbor(dx, dy);
 		if (newTile.passable) {
+
 			if (!newTile.character) {
 				this.move(newTile);
 			}
@@ -30,6 +31,26 @@ class Character {
 				}
 			}
 			return true;
+		}
+
+		else {
+			if (newTile instanceof InvisibleWall) {
+				if (newTile.x < 0) {
+					newTile = getTile(columnsTilesCount - 1, this.tile.y);
+				}
+				if (newTile.x > columnsTilesCount - 1) {
+					newTile = getTile(0, this.tile.y);
+				}
+				if (newTile.y < 0) {
+					newTile = getTile(this.tile.x, rowsTilesCount - 1);
+				}
+				if (newTile.y > rowsTilesCount - 1) {
+					newTile = getTile(this.tile.x, 0);
+				}
+				this.move(newTile);
+				return true;
+			}
+
 		}
 	}
 

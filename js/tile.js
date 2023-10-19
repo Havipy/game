@@ -10,9 +10,8 @@ class Tile {
 	}
 
 	getNeighbor(dx, dy) {
-		return getTile(this.x + dx, this.y + dy)
+		return getTile(this.x + dx, this.y + dy);
 	}
-
 	getNextNeighbors() {
 		return shuffle([
 			this.getNeighbor(0, -1),
@@ -21,21 +20,18 @@ class Tile {
 			this.getNeighbor(1, 0)
 		]);
 	}
-
 	getNearThroughoutNeighbors() {
 		return this.getNextNeighbors().filter(t => t.passable);
 	}
 	getConnectedTiles() {
 		let connectedTiles = [this];
-
 		let frontier = [this];
 		while (frontier.length) {
-
 			let neighbors = frontier.pop()
 				.getNearThroughoutNeighbors()
 				.filter(t => !connectedTiles.includes(t));
-
 			connectedTiles = connectedTiles.concat(neighbors);
+
 			frontier = frontier.concat(neighbors);
 		}
 		return connectedTiles;
@@ -55,6 +51,7 @@ class Tile {
 		}
 	}
 }
+
 class Floor extends Tile {
 	constructor(x, y) {
 		const sprite = new Image();
@@ -84,4 +81,12 @@ class Wall extends Tile {
 		sprite.src = 'images/tile-W.png';
 		super(x, y, sprite, false);
 	}
+}
+class InvisibleWall {
+	constructor(x, y) {
+		this.x = x;
+		this.y = y;
+		this.passable = false;
+	}
+
 }

@@ -7,35 +7,32 @@ let passableTiles = 0;
 function generateMap() {
 	attempTo('генерации карты', function () {
 		passableTiles = 0;
-		return generateTiles() == getRandomThroughoutTile().getConnectedTiles().length;
+		return generateTiles() === getRandomThroughoutTile().getConnectedTiles().length;
 	});
 
 	spawnEnamies();
 
 	for (let i = 0; i < 2; i++) {
 		getRandomThroughoutTile().sword = true;
-
 	}
 
 	for (let i = 0; i < 10; i++) {
 		getRandomThroughoutTile().potion = true;
-
 	}
-
-
 
 }
 
 //Генерация блоков
 function generateTiles() {
-
+	passableTiles = 0;
 	//Заполнение стеной всего поля
-	for (let i = 0; i < columnTilesCount; i++) {
+	for (let i = 0; i < columnsTilesCount; i++) {
 		tiles[i] = [];
 		for (let j = 0; j < rowsTilesCount; j++) {
 			tiles[i][j] = new Wall(i, j);
 		}
 	}
+
 
 	//Создание стен
 	const wallsCount = randomInteger(5, 10);
@@ -63,23 +60,23 @@ function generateTiles() {
 
 //Проверка границ
 function inBounds(x, y) {
-	return x > 0 && y > 0 && x < columnTilesCount - 1 && y < rowsTilesCount - 1;
+	return x >= 0 && y >= 0 && x < columnsTilesCount && y < rowsTilesCount;
 }
 
 function getTile(x, y) {
 	if (inBounds(x, y)) {
 		return tiles[x][y];
 	} else {
-		return new Wall(x, y);
+		return new InvisibleWall(x, y);
 	}
-}
 
+}
 //Функция для создания комнаты
 function createRoom(rects) {
 
 	const width = randomInteger(3, 8);
 	const height = randomInteger(3, 8);
-	const x = randomInteger(1, (columnTilesCount - width - 1));
+	const x = randomInteger(1, (columnsTilesCount - width - 1));
 	const y = randomInteger(1, (rowsTilesCount - height - 1));
 	const rect =
 	{
@@ -115,7 +112,7 @@ function createLines(lines, horizontal) {
 
 	let position = horizontal
 		? randomInteger(1, (rowsTilesCount - 2))
-		: randomInteger(1, (columnTilesCount - 2));
+		: randomInteger(1, (columnsTilesCount - 2));
 
 	let ok = true;
 
@@ -128,7 +125,8 @@ function createLines(lines, horizontal) {
 	if (ok) {
 		lines.push(position);
 		if (horizontal) {
-			for (let i = 1; i < columnTilesCount - 1; i++) {
+			for (let i = 0; i < columnsTilesCount; i++) {
+
 				if (tiles[i][position] instanceof Floor) {
 					continue;
 				}
@@ -137,7 +135,7 @@ function createLines(lines, horizontal) {
 			}
 		}
 		else {
-			for (let j = 1; j < rowsTilesCount - 1; j++) {
+			for (let j = 0; j < rowsTilesCount; j++) {
 				if (tiles[position][j] instanceof Floor) {
 					continue;
 				}
@@ -160,7 +158,6 @@ function spawnEnamies() {
 		const enemy = new Enemy(getRandomThroughoutTile());
 		enemies.push(enemy);
 	}
-
 }
 
 //Функция возвращающая любой свободный блок
@@ -169,11 +166,13 @@ function getRandomThroughoutTile() {
 
 	let tile;
 	attempTo('получения свободной клетки', function () {
-		let x = randomInteger(0, columnTilesCount - 1);
+		let x = randomInteger(0, columnsTilesCount - 1);
 		let y = randomInteger(0, rowsTilesCount - 1);
 		tile = getTile(x, y);
+
 		return tile.passable && !tile.character && !tile.potion && !tile.sword;
 	});
 	return tile;
 
 }
+

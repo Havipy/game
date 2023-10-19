@@ -1,7 +1,6 @@
-
 //Настройка размеров канваса
 function setupCanvas() {
-	canvas.width = tileSize * columnTilesCount;
+	canvas.width = tileSize * columnsTilesCount;
 	canvas.height = tileSize * rowsTilesCount;
 	canvas.style.width = canvas.width + 'px';
 	canvas.style.height = canvas.height + 'px';
@@ -40,9 +39,8 @@ function draw() {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 		//Отрисовка полей
-		for (let i = 0; i < columnTilesCount; i++) {
+		for (let i = 0; i < columnsTilesCount; i++) {
 			for (let j = 0; j < rowsTilesCount; j++) {
-
 				tiles[i][j].draw();
 			}
 		}
@@ -70,5 +68,4 @@ function startGame() {
 	generateMap();
 	player = new Player(getRandomThroughoutTile());
 	gameState = "running";
-
 }
