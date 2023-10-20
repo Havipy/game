@@ -58,7 +58,6 @@ const game = {
 
 	//Заставка
 	showTitle(title) {
-		console.log(1);
 		ctx.fillStyle = 'rgba(0,0,0,.75)';
 		ctx.fillRect(0, 0, canvas.width, canvas.height);
 		gameState = "title";
