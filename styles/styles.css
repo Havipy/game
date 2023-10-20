@@ -1,0 +1,27 @@
+
+		* {
+			box-sizing: border-box;
+		}
+
+		body,
+		html {
+			height: 100%;
+		}
+
+		h1 {
+			font-family: "Playfair Display";
+			font-size: 30px;
+			padding: 10px 0px;
+			color: white;
+			margin: 0px;
+		}
+
+		.field {
+			margin-top: 50px;
+			outline: 1px solid white;
+		}
+
+		body {
+			background-color: rgb(0, 0, 0);
+			text-align: center;
+		}
