@@ -1,178 +1,198 @@
+"use strict";
 
-//Объявление переменных
-const tiles = [];
-let passableTiles = 0;
+class Map {
 
-//Генерация карты
-function generateMap() {
-	attempTo('генерации карты', function () {
-		passableTiles = 0;
-		return generateTiles() === getRandomThroughoutTile().getConnectedTiles().length;
-	});
-
-	spawnEnamies();
-
-	for (let i = 0; i < 2; i++) {
-		getRandomThroughoutTile().sword = true;
+	constructor(options) {
+		this.columnsTilesCount = options.columnsTilesCount;
+		this.rowsTilesCount = options.rowsTilesCount;
+		this.tiles = [];
+		this.passableTiles = 0;
+		this.enemies = [];
 	}
+	//Функция возвращающая любой свободный блок
 
-	for (let i = 0; i < 10; i++) {
-		getRandomThroughoutTile().potion = true;
+	getRandomThroughoutTile() {
+
+		let tile;
+
+		attempTo('получения свободной клетки', function () {
+			const x = randomInteger(0, this.columnsTilesCount - 1);
+			const y = randomInteger(0, this.rowsTilesCount - 1);
+			tile = this.getTile(x, y);
+			return tile.passable && !tile.character && !tile.potion && !tile.sword;
+		}.bind(this));
+
+		return tile;
+
 	}
+	generateMap() {
 
-}
+		attempTo('генерации карты', function () {
+			this.passableTiles = 0;
+			return this.generateTiles() === this.getRandomThroughoutTile().getConnectedTiles().length;
+		}.bind(this));
 
-//Генерация блоков
-function generateTiles() {
-	passableTiles = 0;
-	//Заполнение стеной всего поля
-	for (let i = 0; i < columnsTilesCount; i++) {
-		tiles[i] = [];
-		for (let j = 0; j < rowsTilesCount; j++) {
-			tiles[i][j] = new Wall(i, j);
+		this.spawnEnamies();
+
+		for (let i = 0; i < 2; i++) {
+			this.getRandomThroughoutTile().sword = true;
+		}
+
+		for (let i = 0; i < 10; i++) {
+			this.getRandomThroughoutTile().potion = true;
+		}
+		for (let i = 0; i < 3; i++) {
+			this.getRandomThroughoutTile().treasure = true;
 		}
 	}
 
+	//Генерация блоков
+	generateTiles() {
 
-	//Создание стен
-	const wallsCount = randomInteger(5, 10);
-	const rects = [];
-	for (let i = 0; i < wallsCount; i++) {
-		createRoom(rects);
-	}
+		this.passableTiles = 0;
+		//Заполнение стеной всего поля
 
-	//Создание проходов
-	const verticalLinesCount = randomInteger(3, 5);
-	const horizontalLinesCount = randomInteger(3, 5);
-	const horizontalLines = [];
-	const verticalLines = [];
+		for (let i = 0; i < this.columnsTilesCount; i++) {
+			this.tiles[i] = [];
+			for (let j = 0; j < this.rowsTilesCount; j++) {
 
-	for (let i = 0; i < horizontalLinesCount; i++) {
-		createLines(horizontalLines, true);
-	}
-	for (let i = 0; i < verticalLinesCount; i++) {
-		createLines(verticalLines, false);
-	}
+				this.tiles[i][j] = new Wall(i, j);
 
-	return passableTiles;
-
-}
-
-//Проверка границ
-function inBounds(x, y) {
-	return x >= 0 && y >= 0 && x < columnsTilesCount && y < rowsTilesCount;
-}
-
-function getTile(x, y) {
-	if (inBounds(x, y)) {
-		return tiles[x][y];
-	} else {
-		return new InvisibleWall(x, y);
-	}
-
-}
-//Функция для создания комнаты
-function createRoom(rects) {
-
-	const width = randomInteger(3, 8);
-	const height = randomInteger(3, 8);
-	const x = randomInteger(1, (columnsTilesCount - width - 1));
-	const y = randomInteger(1, (rowsTilesCount - height - 1));
-	const rect =
-	{
-		x,
-		y,
-		w: width,
-		h: height
-	}
-	let ok = true;
-	rects.forEach((item) => {
-		if (isCollide(rect, item)) {
-			ok = false;
-		}
-	})
-	if (ok) {
-		rects.push(rect);
-		for (let i = x; i < x + width; i++) {
-			for (let j = y; j < y + height; j++) {
-				tiles[i][j] = new Floor(i, j);
-				passableTiles++;
 			}
 		}
-		return;
-	}
-	else {
-		createRoom(rects);
-	}
 
-}
 
-//Функция для создания прохода
-function createLines(lines, horizontal) {
+		//Создание стен
+		const wallsCount = randomInteger(5, 10);
+		const rects = [];
 
-	let position = horizontal
-		? randomInteger(1, (rowsTilesCount - 2))
-		: randomInteger(1, (columnsTilesCount - 2));
-
-	let ok = true;
-
-	lines.forEach((linePosition) => {
-		if (Math.abs(linePosition - position) <= 1) {
-			ok = false;
+		for (let i = 0; i < wallsCount; i++) {
+			this.createRoom(rects);
 		}
-	});
 
-	if (ok) {
-		lines.push(position);
-		if (horizontal) {
-			for (let i = 0; i < columnsTilesCount; i++) {
+		//Создание проходов
+		const verticalLinesCount = randomInteger(3, 5);
+		const horizontalLinesCount = randomInteger(3, 5);
+		const horizontalLines = [];
+		const verticalLines = [];
 
-				if (tiles[i][position] instanceof Floor) {
-					continue;
+		for (let i = 0; i < horizontalLinesCount; i++) {
+			this.createLines(horizontalLines, true);
+		}
+		for (let i = 0; i < verticalLinesCount; i++) {
+			this.createLines(verticalLines, false);
+		}
+
+		return this.passableTiles;
+
+	}
+
+	//Проверка границ
+	inBounds(x, y) {
+		return x >= 0 && y >= 0 && x < this.columnsTilesCount && y < this.rowsTilesCount;
+	}
+
+	getTile(x, y) {
+		if (this.inBounds(x, y)) {
+			return this.tiles[x][y];
+		} else {
+			return new InvisibleWall(x, y);
+		}
+
+	}
+	//Функция для создания комнаты
+	createRoom(rects) {
+
+		const width = randomInteger(3, 8);
+		const height = randomInteger(3, 8);
+		const x = randomInteger(1, (this.columnsTilesCount - width - 1));
+		const y = randomInteger(1, (this.rowsTilesCount - height - 1));
+		const rect =
+		{
+			x,
+			y,
+			w: width,
+			h: height
+		}
+
+		let ok = true;
+
+		rects.forEach((item) => {
+			if (isCollide(rect, item)) {
+				ok = false;
+			}
+		})
+
+		if (ok) {
+			rects.push(rect);
+			for (let i = x; i < x + width; i++) {
+				for (let j = y; j < y + height; j++) {
+					this.tiles[i][j] = new Floor(i, j);
+					this.passableTiles++;
 				}
-				tiles[i][position] = new Floor(i, position);
-				passableTiles++;
 			}
+
+			return;
 		}
 		else {
-			for (let j = 0; j < rowsTilesCount; j++) {
-				if (tiles[position][j] instanceof Floor) {
-					continue;
-				}
-				tiles[position][j] = new Floor(position, j);
-				passableTiles++;
-			}
+			this.createRoom(rects);
 		}
-		return;
+
 	}
-	else {
-		createLines(lines, horizontal)
+
+	//Функция для создания прохода
+	createLines(lines, horizontal) {
+
+		const position = horizontal
+			? randomInteger(1, (this.rowsTilesCount - 2))
+			: randomInteger(1, (this.columnsTilesCount - 2));
+
+		let ok = true;
+
+		lines.forEach((linePosition) => {
+			if (Math.abs(linePosition - position) <= 1) {
+				ok = false;
+			}
+		});
+
+		if (ok) {
+			lines.push(position);
+			if (horizontal) {
+
+				for (let i = 0; i < this.columnsTilesCount; i++) {
+
+					if (this.tiles[i][position] instanceof Floor) {
+						continue;
+					}
+
+					this.tiles[i][position] = new Floor(i, position);
+					this.passableTiles++;
+				}
+			}
+
+			else {
+				for (let j = 0; j < this.rowsTilesCount; j++) {
+					if (this.tiles[position][j] instanceof Floor) {
+						continue;
+					}
+					this.tiles[position][j] = new Floor(position, j);
+					this.passableTiles++;
+				}
+			}
+			return;
+		}
+		else {
+			this.createLines(lines, horizontal)
+		}
 	}
-}
 
-//Генерация противников
-function spawnEnamies() {
-
-	enemies = [];
-	for (let i = 0; i < 10; i++) {
-		const enemy = new Enemy(getRandomThroughoutTile());
-		enemies.push(enemy);
+	//Генерация противников
+	spawnEnamies() {
+		this.enemies = [];
+		for (let i = 0; i < 10; i++) {
+			const enemy = new Enemy(this.getRandomThroughoutTile());
+			this.enemies.push(enemy);
+		}
 	}
-}
-
-//Функция возвращающая любой свободный блок
-
-function getRandomThroughoutTile() {
-
-	let tile;
-	attempTo('получения свободной клетки', function () {
-		let x = randomInteger(0, columnsTilesCount - 1);
-		let y = randomInteger(0, rowsTilesCount - 1);
-		tile = getTile(x, y);
-
-		return tile.passable && !tile.character && !tile.potion && !tile.sword;
-	});
-	return tile;
 
 }
-

@@ -1,3 +1,5 @@
+"use strict";
+
 class Character {
 
 	constructor(tile, sprite, hp) {
@@ -35,24 +37,28 @@ class Character {
 		}
 
 		else {
-			if (newTile instanceof InvisibleWall) {
-				if (newTile.x < 0) {
-					newTile = getTile(columnsTilesCount - 1, this.tile.y);
-				}
-				if (newTile.x > columnsTilesCount - 1) {
-					newTile = getTile(0, this.tile.y);
-				}
-				if (newTile.y < 0) {
-					newTile = getTile(this.tile.x, rowsTilesCount - 1);
-				}
-				if (newTile.y > rowsTilesCount - 1) {
-					newTile = getTile(this.tile.x, 0);
-				}
-				this.move(newTile);
-				return true;
-			}
+			return this.stepOnInvisibleWall(newTile);
 		}
+	}
 
+	stepOnInvisibleWall(newTile) {
+		if (newTile instanceof InvisibleWall) {
+
+			if (newTile.x < 0) {
+				newTile = game.map.getTile(game.columnsTilesCount - 1, this.tile.y);
+			}
+			if (newTile.x > game.columnsTilesCount - 1) {
+				newTile = game.map.getTile(0, this.tile.y);
+			}
+			if (newTile.y < 0) {
+				newTile = game.map.getTile(this.tile.x, game.rowsTilesCount - 1);
+			}
+			if (newTile.y > rowsTilesCount - 1) {
+				newTile = game.map.getTile(this.tile.x, 0);
+			}
+			this.move(newTile);
+			return true;
+		}
 	}
 
 	//Функция для поиска игрока противником
@@ -64,9 +70,10 @@ class Character {
 		if (neighbors.length) {
 
 			//Поиск наиболее подходящей по расстоянию клетки
-			neighbors.sort((a, b) => a.getDistanceBetweenTiles(player.tile) - b.getDistanceBetweenTiles(player.tile));
+			neighbors.sort((a, b) => a.getDistanceBetweenTiles(game.player.tile) - b.getDistanceBetweenTiles(game.player.tile));
 
 			let newTile = neighbors[0];
+
 			this.tryMove(newTile.x - this.tile.x, newTile.y - this.tile.y);
 		}
 	}
@@ -84,6 +91,7 @@ class Character {
 	}
 
 	die() {
+
 		this.dead = true;
 		this.tile.character = null;
 		const newSprite = new Image();
@@ -92,8 +100,8 @@ class Character {
 	}
 
 	drawHp() {
-		ctx.fillStyle = !this.isPlayer ? "red" : "green";
-		ctx.fillRect(this.tile.x * tileSize, this.tile.y * tileSize, this.hp * 4, 2.5);
+		game.ctx.fillStyle = !this.isPlayer ? "red" : "green";
+		game.ctx.fillRect(this.tile.x * game.tileSize, this.tile.y * game.tileSize, this.hp * 4, 2.5);
 	}
 
 	//Отрисовка персонажа
@@ -105,11 +113,13 @@ class Character {
 }
 
 class Enemy extends Character {
+
 	constructor(tile) {
 		const sprite = new Image();
 		sprite.src = 'images/tile-E.png';
 		super(tile, sprite, 6);
 	}
+
 	//Обновления состояния противника 
 	update() {
 		if (this.enemyStunned) {
@@ -137,7 +147,6 @@ class Player extends Character {
 		// Нахождение ближайших противников
 		const neighbors = this.tile.getNextNeighbors();
 		const nearEnemies = neighbors.filter(t => t.character);
-
 		if (nearEnemies.length >= 1) {
 			nearEnemies.forEach(nearEnemy => {
 				nearEnemy.character.hit(this.damage);
@@ -151,6 +160,7 @@ class Player extends Character {
 			game.tick();
 		}
 	}
+
 	tryMove(dx, dy) {
 		if (super.tryMove(dx, dy)) {
 			game.tick();

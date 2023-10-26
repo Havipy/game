@@ -1,3 +1,5 @@
+"use strict";
+
 class Tile {
 
 	constructor(x, y, sprite, passable) {
@@ -6,41 +8,47 @@ class Tile {
 		this.passable = passable;
 		this.sprite = sprite;
 	}
+
 	getDistanceBetweenTiles(other) {
 		return Math.abs(this.x - other.x) + Math.abs(this.y - other.y);
 	}
 
 	getNeighbor(dx, dy) {
-		return getTile(this.x + dx, this.y + dy);
+		return game.map.getTile(this.x + dx, this.y + dy);
 	}
+
 	getNextNeighbors() {
-		return shuffle([
+		return [
 			this.getNeighbor(0, -1),
 			this.getNeighbor(0, 1),
 			this.getNeighbor(-1, 0),
 			this.getNeighbor(1, 0)
-		]);
+		];
 	}
+
 	getNearThroughoutNeighbors() {
 		return this.getNextNeighbors().filter(t => t.passable);
 	}
+
 	getConnectedTiles() {
 		let connectedTiles = [this];
-		let frontier = [this];
-		while (frontier.length) {
-			let neighbors = frontier.pop()
+		let stack = [this];
+		let count = 0;
+		while (stack.length) {
+			count++;
+			let neighbors = stack.pop()
 				.getNearThroughoutNeighbors()
 				.filter(t => !connectedTiles.includes(t));
-			connectedTiles = connectedTiles.concat(neighbors);
-
-			frontier = frontier.concat(neighbors);
+			connectedTiles = [...connectedTiles, ...neighbors];
+			stack = [...stack, ...neighbors];
 		}
+		console.log(count)
 		return connectedTiles;
 	}
+
 	draw() {
 		game.drawSprite(this.sprite, this.x, this.y);
 		if (this.potion) {
-
 			const potionSprite = new Image();
 			potionSprite.src = 'images/tile-HP.png';
 			game.drawSprite(potionSprite, this.x, this.y);
@@ -50,6 +58,8 @@ class Tile {
 			swordSprite.src = 'images/tile-SW.png';
 			game.drawSprite(swordSprite, this.x, this.y);
 		}
+
+
 	}
 }
 
@@ -68,7 +78,6 @@ class Floor extends Tile {
 	}
 
 	stepOnPotion(character) {
-
 		if (character.isPlayer && this.potion) {
 			if (character.hp < 6) {
 				character.hp = 6;
@@ -77,6 +86,7 @@ class Floor extends Tile {
 		}
 	}
 }
+
 class Wall extends Tile {
 	constructor(x, y) {
 		const sprite = new Image();
@@ -84,11 +94,11 @@ class Wall extends Tile {
 		super(x, y, sprite, false);
 	}
 }
+
 class InvisibleWall {
 	constructor(x, y) {
 		this.x = x;
 		this.y = y;
 		this.passable = false;
 	}
-
 }

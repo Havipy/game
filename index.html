@@ -18,41 +18,44 @@
 	<script src="js/util.js"></script>
 
 	<script>
+
 		const tileSize = 25;
 		const rowsTilesCount = 25;
 		const columnsTilesCount = 41;
-		const canvas = document.querySelector('.field');
-		const ctx = canvas.getContext('2d');
-		let gameState = 'title';
+
+		const game = new Game({ tileSize, rowsTilesCount, columnsTilesCount });
 
 		document.querySelector('html').onkeypress = function (e) {
 			e.preventDefault();
-			if (gameState == 'title') {
+			if (game.gameState == 'title') {
 				game.startGame();
 			}
-			else if (gameState == 'running') {
+			else if (game.gameState == 'running') {
 				if (e.key == "w") {
-					player.tryMove(0, -1);
+
+
+					game.player.tryMove(0, -1);
 				}
 				if (e.key == "s") {
-					player.tryMove(0, 1);
+					game.player.tryMove(0, 1);
 				}
 				if (e.key == "a") {
-					player.tryMove(-1, 0);
+					game.player.tryMove(-1, 0);
 				}
 				if (e.key == "d") {
-					player.tryMove(1, 0);
+					game.player.tryMove(1, 0);
 				}
 				if (e.code == 'Space') {
-					player.attack();
+					game.player.attack();
 				}
 			}
 			game.draw();
 		}
 
-		setInterval(game.draw, 20);
+		setInterval(game.draw.bind(game), 20);
+
 		game.setupCanvas();
-		game.showTitle('Рогалик');
+		game.showTitle('рогалик');
 
 	</script>
 </body>
